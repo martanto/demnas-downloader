@@ -3,6 +3,7 @@ import requests
 import os.path
 import argparse
 from requests import get
+from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
 # DEMNAS Donwloader for http://tides.big.go.id/DEMNAS
@@ -38,7 +39,10 @@ class DemDownloader():
                 os.makedirs(folder)
             if not os.path.exists(folder+'/'+filename):
                 with open(folder+'/'+filename, "wb") as file:
-                    response = self._session.get(download_url, cookies={"PHPSESSID": self._cookies["PHPSESSID"]}, retries=Retry(connect=3, backoff_factor=1))
+                    retry = Retry(connect=3, backoff_factor=1)
+                    adapter = HTTPAdapter(max_retries=retry)
+                    self._session.mount('http://', adapter)
+                    response = self._session.get(download_url, cookies={"PHPSESSID": self._cookies["PHPSESSID"]})
                     file.write(response.content)
                     if (os.path.getsize(folder+'/'+filename) < 5000):
                         return 'Gagal Download. Cek login email dan password'
