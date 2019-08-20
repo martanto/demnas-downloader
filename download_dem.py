@@ -30,7 +30,10 @@ class DemDownloader():
     # Starting download
     def download(self):
         for features in self._data['features']:
-            nomor_peta = features['properties']['NOMOR_PETA']
+            if self._pulau == 'nusa_tenggara':
+                nomor_peta = features['properties']['NAMOBJ']
+            else:
+                nomor_peta = features['properties']['NOMOR_PETA']
             download_url = self._download_url+nomor_peta+'_v1.0.tif'
             folder = os.getcwd()+'/downloaded/'+self._pulau
             filename = 'DEMNAS_'+nomor_peta+'_v1.0.tif'
